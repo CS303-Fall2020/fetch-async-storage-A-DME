@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Keyboard,
   TouchableWithoutFeedback,
   FlatList,
-  Alert
+  Alert,
+  AsyncStorage,
+  ActivityIndicator,
+  Button
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
@@ -15,29 +18,75 @@ import Sandbox from '../components/sandbox';
 
 export default function Home({ navigation }) {
   const [todos, setTodos] = useState([
-    { text: 'buy coffee', key: '1', isDone: false },
-    { text: 'create an app', key: '2', isDone: false },
-    { text: 'play on the switch', key: '3', isDone: false }
+    // { text: 'buy coffee', key: '1', isDone: false },
+    // { text: 'create an app', key: '2', isDone: false },
+    // { text: 'play on the switch', key: '3', isDone: false }
   ]);
-  const pressHandler = key => {
+
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos?userId=1')
+      .then(res => res.json())
+      .then(res => {
+        setTodos(res), setLoading(false);
+      })
+      .then(json => console.log(json))
+      .catch(e => {
+        console.error(e);
+      });
+  }, []);
+
+  const onRefresh = async () => {
+    setLoading(!loading);
+    return fetch('https://jsonplaceholder.typicode.com/todos?userId=1')
+      .then(res => res.json())
+      .then(res => {
+        setTodos(res), setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+//   load = async () => {
+//     try {
+//       const get = await AsyncStorage.getItem(todos);
+//       if (get !== null) {
+//         this.setState({ get });
+//       }
+//     } catch (e) {
+//       console.error('Failed to load get.');
+//     }
+//   };
+//   save = async get => {
+//     try {
+//       await AsyncStorage.setItem(todos, [title, id, completed]);
+
+//       this.setState({ get });
+//     } catch (e) {
+//       console.error('Failed to save todos.');
+//     }
+//   };
+
+  const pressHandler = id => {
     setTodos(prevTodos => {
-      return prevTodos.filter(todo => todo.key != key);
+      return prevTodos.filter(todo => todo.id != id);
     });
   };
   // const retod = item => {
-  //   todos.indexOf(item.key);
+  //   todos.indexOf(item.id);
   //   return item.text;
   // };
 
-  const upHand = (key, text) => {
+  const upHand = (id, title) => {
     // setTodos(val => {
-    //   return [{ text: text, key: key }, ...val];
+    //   return [{ title: title, id: id }, ...val];
     // });
-    // // navigation.setParam('text', val);
+    // // navigation.setParam('title', val);
     setTodos(prevTodos => {
       return prevTodos.filter(todo => {
-        if ((todo.key != key) == false) {
-          todo.text = text;
+        if ((todo.id != id) == false) {
+          todo.title = title;
         }
         return true;
       });
@@ -45,13 +94,13 @@ export default function Home({ navigation }) {
     navigation.navigate('Home');
   };
 
-  const submitHandler = text => {
-    if (text.length > 3) {
+  const submitHandler = title => {
+    if (title.length > 3) {
       setTodos(val => {
-        return [{ text: text, key: Math.random().toString() }, ...val];
+        return [{ title: title, id: Math.random().toString() }, ...val];
       });
     }
-    //  else if (text.toString().isEmpty()) {
+    // else if (title.trim().length < 3) {
     //   Alert.alert('OOPS!', 'Cannot insert an empty Todo', [
     //     { text: 'Understood', onPress: () => console.log('alert closed') }
     //   ]);
@@ -64,11 +113,11 @@ export default function Home({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const checkHandler = key => {
+  const checkHandler = id => {
     setTodos(prevTodos => {
       return prevTodos.filter(todo => {
-        if ((todo.key != key) == false) {
-          todo.isDone = !todo.isDone;
+        if ((todo.id != id) == false) {
+          todo.completed = !todo.completed;
         }
         return true;
       });
@@ -88,22 +137,27 @@ export default function Home({ navigation }) {
           <AddTodo submitHandler={submitHandler} />
           {/* <Button title='go to rev dets' /> */}
           <View style={globalStyles.list}>
-            <FlatList
-              data={todos}
-              renderItem={({ item }) => (
-                <TodoItem
-                  style={globalStyles.titleText}
-                  item={item}
-                  pressHandler={pressHandler}
-                  navigation={navigation}
-                  // pHN={pHN}
-                  txt={item.text}
-                  checkHandler={checkHandler}
-                  upHand={upHand}
-                />
-              )}
-            />
+            {loading ? (
+              <ActivityIndicator size='large' color='red' />
+            ) : (
+              <FlatList
+                data={todos}
+                renderItem={({ item }) => (
+                  <TodoItem
+                    style={globalStyles.titleText}
+                    item={item}
+                    pressHandler={pressHandler}
+                    navigation={navigation}
+                    // pHN={pHN}
+                    txt={item.title}
+                    checkHandler={checkHandler}
+                    upHand={upHand}
+                  />
+                )}
+              />
+            )}
           </View>
+          <Button title='refresh' onPress={onRefresh} />
         </View>
       </View>
     </TouchableWithoutFeedback>

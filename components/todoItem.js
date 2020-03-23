@@ -21,22 +21,22 @@ export default function TodoItem({
           name='delete'
           size={22}
           color='#333'
-          onPress={() => pressHandler(item.key)}
+          onPress={() => pressHandler(item.id)}
         />
         <View style={globalStyles.itemText}>
           <Text
             // style={globalStyles.itemText}
             style={
-              Boolean(item.isDone) && { textDecorationLine: 'line-through' }
+              Boolean(item.completed) && { textDecorationLine: 'line-through' }
             }
           >
-            {item.text}
+            {item.title}
           </Text>
         </View>
         <CheckBox
           // style={globalStyles.check}
-          value={item.isDone}
-          onChange={() => checkHandler(item.key)}
+          value={item.completed}
+          onChange={() => checkHandler(item.id)}
         />
       </View>
     </TouchableOpacity>

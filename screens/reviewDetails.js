@@ -7,32 +7,31 @@ export default function ReveiwDetails({ navigation }) {
     navigation.goBack();
   };
 
-  const [text, setText] = useState('');
-
+  const [title, setTitle] = useState('');
+  const p = { x: false };
   const changeHandler = val => {
-    setText(navigation.getParam('item').text + val);
+    setTitle(navigation.getParam('item').title + val);
+    p.x = true;
   };
-  // const update = (key, text) => useEffect(upHand(key, text));
+
   const update = navigation.getParam('upHand');
-  // useEffect(() => {
-  //   setTodos(val => {
-  //     return [{ text: text, key: key }, ...val];
-  //   });
-  //   // navigation.setParam('text', val);
-  //   navigation.navigate('Home');
-  // }
-  // );
+
   return (
     <View style={globalStyles.container}>
       <TextInput
         style={globalStyles.input}
-        defaultValue={navigation.getParam('item').text}
+        defaultValue={navigation.getParam('item').title}
         onChangeText={changeHandler}
         multiline={true}
       />
       <Button
         title='Done'
-        onPress={() => update(navigation.getParam('item').key, text)}
+        onPress={() =>
+          update(
+            navigation.getParam('item').id,
+            p.x ? title : navigation.getParam('item').title
+          )
+        }
       />
     </View>
   );

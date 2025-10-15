@@ -10,7 +10,7 @@
   "dependencies": {
     "@react-native-community/masked-view": "0.1.5",
     "@react-navigation/native": "^5.0.9",
-    "expo": "~36.0.0",
+    "expo": "~48.0.0",
     "ionic-native": "https://github.com/ionic-team/ionic-native/tarball/v3.5.0",
     "mem": "^6.0.1",
     "pkg": "^4.4.3",

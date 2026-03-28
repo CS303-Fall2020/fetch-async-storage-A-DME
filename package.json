@@ -13,7 +13,7 @@
     "expo": "~36.0.0",
     "ionic-native": "https://github.com/ionic-team/ionic-native/tarball/v3.5.0",
     "mem": "^6.0.1",
-    "pkg": "^4.4.3",
+    "pkg": "^5.8.1",
     "pkg.json": "^2.0.7",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
